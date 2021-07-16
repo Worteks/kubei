@@ -257,6 +257,8 @@ func (s *Scanner) createVulnerabilitiesScannerContainer(imageName, secretName st
 
 	env = s.appendProxyEnvConfig(env)
 
+	i := func(i int64) *int64 { return &i }
+
 	if secretName != "" {
 		log.WithFields(s.logFields).Debugf("Adding private registry credentials to image: %s", imageName)
 		env = append(env, corev1.EnvVar{
@@ -288,6 +290,9 @@ func (s *Scanner) createVulnerabilitiesScannerContainer(imageName, secretName st
 				corev1.ResourceMemory: resource.MustParse("10Mi"),
 			},
 		},
+		SecurityContext: &corev1.SecurityContext{
+			RunAsUser: i(1000),
+		},
 	}
 }
 
@@ -301,6 +306,8 @@ func (s *Scanner) createDockerfileScannerContainer(imageName, secretName string,
 	}
 
 	env = s.appendProxyEnvConfig(env)
+
+	i := func(i int64) *int64 { return &i }
 
 	if secretName != "" {
 		log.WithFields(s.logFields).Debugf("Adding private registry credentials to image: %s", imageName)
@@ -333,6 +340,9 @@ func (s *Scanner) createDockerfileScannerContainer(imageName, secretName string,
 				corev1.ResourceCPU:    resource.MustParse("10m"),
 				corev1.ResourceMemory: resource.MustParse("10Mi"),
 			},
+		},
+		SecurityContext: &corev1.SecurityContext{
+			RunAsUser: i(1000),
 		},
 	}
 }
